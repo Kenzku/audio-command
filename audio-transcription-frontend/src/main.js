@@ -3,6 +3,7 @@ import { setupTranscriptionUI } from './components/transcriptionUI.js';
 import { setupVisualizer } from './components/visualizer.js';
 import { setupLLMAssistant } from './components/llmAssistant.js';
 import { setupVoiceCommands } from './components/voiceCommands.js';
+import { initCommandAnalyzer } from './components/commandAnalyzer.js';
 import { APIDiscoveryService } from './services/apiDiscovery.js';
 import { API_URL, LLM_API_URL, API_SPEC_URL } from './config.js';
 
@@ -78,7 +79,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log(`Discovered ${endpoints.length} API endpoints`);
     }
     
-    // Initialize Voice Commands
+    // Initialize Command Analyzer for in-recording commands
+    const commandAnalyzer = initCommandAnalyzer({
+      apiUrl: API_URL,
+      llmApiUrl: LLM_API_URL,
+      statusElement: document.getElementById('status'),
+      resultElement: document.getElementById('resultText'),
+      loadingElement: document.getElementById('loading')
+    });
+    
+    // Initialize Voice Commands (for explicit command mode)
     const voiceCommands = setupVoiceCommands({
       statusElement: document.getElementById('status'),
       recorder: recorder,
@@ -100,25 +110,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     
-    // Add voice command toggle button to UI
-    const voiceCommandButton = document.getElementById('voiceCommandButton');
-    if (voiceCommandButton && voiceCommands) {
-      let commandModeActive = false;
-      
-      voiceCommandButton.addEventListener('click', () => {
-        if (commandModeActive) {
-          voiceCommands.stopCommandMode();
-          voiceCommandButton.classList.remove('active');
-          voiceCommandButton.innerHTML = '<i class="mic-icon"></i> Enable Voice Commands';
-          commandModeActive = false;
-        } else {
-          voiceCommands.startCommandMode();
-          voiceCommandButton.classList.add('active');
-          voiceCommandButton.innerHTML = '<i class="mic-icon active"></i> Listening...';
-          commandModeActive = true;
-        }
-      });
-    }
+    // Voice command functionality is now integrated directly into the recording process
+    // No need for a separate button since commands are detected automatically from recordings
   } catch (error) {
     console.error('Failed to initialize API discovery:', error);
   }

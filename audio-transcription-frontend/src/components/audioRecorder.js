@@ -58,7 +58,7 @@ export function setupRecorder({
         recordButton.classList.remove('recording');
         stopButton.disabled = true;
         transcribeButton.disabled = false;
-        statusElement.textContent = 'Recording stopped. Ready to transcribe.';
+        statusElement.textContent = 'Recording stopped. Analyzing...';
         
         // Stop the timer
         clearInterval(timerInterval);
@@ -66,6 +66,18 @@ export function setupRecorder({
         
         // Get all tracks from stream and stop them
         stream.getTracks().forEach(track => track.stop());
+        
+        // Automatically analyze the recording for commands
+        if (window.voiceCommandAnalyzer) {
+          try {
+            window.voiceCommandAnalyzer(audioBlob);
+          } catch (cmdError) {
+            console.error('Error analyzing voice command:', cmdError);
+            statusElement.textContent = 'Ready to transcribe.';
+          }
+        } else {
+          statusElement.textContent = 'Ready to transcribe.';
+        }
       });
       
       // Start recording
@@ -76,7 +88,7 @@ export function setupRecorder({
       recordButton.classList.add('recording');
       stopButton.disabled = false;
       transcribeButton.disabled = true;
-      statusElement.textContent = 'Recording in progress...';
+      statusElement.textContent = 'Recording... (Voice commands enabled)';
       
       // Start timer
       startTime = Date.now();

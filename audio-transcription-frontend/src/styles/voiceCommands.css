@@ -39,6 +39,14 @@
   margin-top: var(--spacing-xs);
 }
 
+.command-hint {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: normal;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 /* Microphone icon */
 .mic-icon {
   display: inline-block;
