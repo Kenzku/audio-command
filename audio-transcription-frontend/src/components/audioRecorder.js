@@ -57,7 +57,6 @@ export function setupRecorder({
         // Update UI
         recordButton.classList.remove('recording');
         stopButton.disabled = true;
-        transcribeButton.disabled = false;
         statusElement.textContent = 'Recording stopped. Analyzing...';
         
         // Stop the timer
@@ -70,13 +69,17 @@ export function setupRecorder({
         // Automatically analyze the recording for commands
         if (window.voiceCommandAnalyzer) {
           try {
+            console.log('Sending audio blob for analysis...');
             window.voiceCommandAnalyzer(audioBlob);
+            // Don't update status here, let the analyzer handle it
           } catch (cmdError) {
             console.error('Error analyzing voice command:', cmdError);
-            statusElement.textContent = 'Ready to transcribe.';
+            statusElement.textContent = 'Error analyzing recording. Ready to transcribe.';
+            transcribeButton.disabled = false; // Enable manual transcription as fallback
           }
         } else {
           statusElement.textContent = 'Ready to transcribe.';
+          transcribeButton.disabled = false; // Enable manual transcription
         }
       });
       

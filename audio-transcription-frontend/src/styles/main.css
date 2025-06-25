@@ -285,6 +285,62 @@ main {
   background-color: var(--secondary-hover);
 }
 
+/* Translation styles */
+.translation-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.translation-result .original,
+.translation-result .translation {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+}
+
+.translation-result .original {
+  border-left: 4px solid var(--primary);
+}
+
+.translation-result .translation {
+  border-left: 4px solid var(--secondary);
+}
+
+.translation-result h4 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.translation-result p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.translation-result .error {
+  border-left-color: var(--danger);
+}
+
+.translation-result .error-message {
+  color: var(--danger);
+}
+
+@media (min-width: 768px) {
+  .translation-result {
+    flex-direction: row;
+  }
+  
+  .translation-result .original,
+  .translation-result .translation {
+    flex: 1;
+  }
+}
+
 /* Footer */
 footer {
   text-align: center;

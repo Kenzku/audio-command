@@ -91,6 +91,68 @@ const swaggerOptions = {
             },
           },
         },
+        TranslationRequest: {
+          type: 'object',
+          required: ['audioData', 'targetLanguage'],
+          properties: {
+            audioData: {
+              type: 'string',
+              description: 'Base64 encoded audio data',
+              example: 'data:audio/wav;base64,UklGRiQAAABXQVZ...',
+            },
+            targetLanguage: {
+              type: 'string',
+              description: 'Target language for translation',
+              example: 'Spanish',
+            },
+          },
+        },
+        TranslationResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              description: 'Whether the translation was successful',
+              example: true,
+            },
+            originalTranscription: {
+              type: 'string',
+              description: 'The original transcribed text',
+              example: 'Hello world, this is a test transcription.',
+            },
+            translation: {
+              type: 'string',
+              description: 'The translated text',
+              example: 'Hola mundo, esta es una transcripción de prueba.',
+            },
+            targetLanguage: {
+              type: 'string',
+              description: 'The language the audio was translated to',
+              example: 'Spanish',
+            },
+            metadata: {
+              type: 'object',
+              properties: {
+                processed_at: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'When the audio was processed',
+                  example: '2025-06-25T12:34:56Z',
+                },
+                transcription_model: {
+                  type: 'string',
+                  description: 'The model used for transcription',
+                  example: 'whisper-1',
+                },
+                translation_model: {
+                  type: 'string',
+                  description: 'The model used for translation',
+                  example: 'gpt-4',
+                },
+              },
+            },
+          },
+        },
         ErrorResponse: {
           type: 'object',
           properties: {

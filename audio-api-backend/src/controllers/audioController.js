@@ -100,35 +100,125 @@ exports.transcribeAudio = async (req, res) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.getAvailableModels = async (req, res) => {
+exports.getAvailableModels = (req, res) => {
   try {
-    // Return list of available models
-    // In a production environment, this could fetch from OpenAI's API
     res.status(200).json({
-      models: AVAILABLE_MODELS,
-      default_model: 'whisper-1',
-      capabilities: {
-        languages: [
-          { code: 'en', name: 'English' },
-          { code: 'es', name: 'Spanish' },
-          { code: 'fr', name: 'French' },
-          { code: 'de', name: 'German' },
-          { code: 'zh', name: 'Chinese' },
-          { code: 'ja', name: 'Japanese' }
-        ],
-        features: [
-          'transcription',
-          'translation',
-          'speaker-identification'
-        ]
-      }
+      models: AVAILABLE_MODELS
     });
   } catch (error) {
-    console.error('Error fetching models:', error.message);
+    res.status(500).json({
+      error: 'Failed to retrieve available models'
+    });
+  }
+};
+
+/**
+ * Translate audio to a target language
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.translateAudio = async (req, res) => {
+  try {
+    // Get data from request body
+    const { audioData, content, targetLanguage } = req.body;
+    
+    // If target language isn't specified, default to English
+    const finalTargetLanguage = targetLanguage || 'English';
+
+    let transcription;
+    
+    // If content is provided directly, use it (front-end already has transcription)
+    // Otherwise, transcribe the audio first
+    if (content) {
+      console.log('Content provided directly, skipping transcription step');
+      transcription = content;
+    } else if (audioData) {
+      // Create temporary file path with .wav extension for compatibility
+      const tempFilePath = path.join(os.tmpdir(), `audio-${Date.now()}.wav`);
+      
+      // Write the base64-decoded audio data to the temp file
+      fs.writeFileSync(tempFilePath, Buffer.from(audioData, 'base64'));
+      
+      console.log(`Temporary audio file created at: ${tempFilePath}`);
+      
+      // Create form data for OpenAI API
+      const formData = new FormData();
+      formData.append('file', fs.createReadStream(tempFilePath));
+      formData.append('model', 'whisper-1');
+      
+      // For translation, we first need to transcribe the audio
+      console.log('Sending transcription request to OpenAI...');
+      
+      // OpenAI Audio API endpoint for transcription
+      const openaiEndpoint = 'https://api.openai.com/v1/audio/transcriptions';
+      
+      // Send request to OpenAI
+      const transcriptionResponse = await axios.post(openaiEndpoint, formData, {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          ...formData.getHeaders()
+        }
+      });
+      
+      // Clean up temp file
+      fs.unlinkSync(tempFilePath);
+      
+      transcription = transcriptionResponse.data.text;
+    } else {
+      return res.status(400).json({ 
+        success: false,
+        error: "Either audio data or content must be provided" 
+      });
+    }
+    
+    // Now use the GPT API to translate the transcribed text
+    console.log('Sending for translation...');
+    
+    // Send to OpenAI's Chat API for translation
+    const translationResponse = await axios.post('https://api.openai.com/v1/chat/completions', {
+      model: 'gpt-4', // Using GPT-4 for translation
+      messages: [
+        {
+          role: 'system', 
+          content: `You are a professional translator fluent in all languages. Translate the following text to ${finalTargetLanguage}. 
+            If the target language is unclear or generic (e.g., just "language" or "another language"), translate to English.
+            Maintain the tone, meaning, and style as closely as possible.
+            If the text is already in the target language, mention this and return the original text.`
+        },
+        { 
+          role: 'user', 
+          content: transcription
+        }
+      ],
+      temperature: 0.3 // Lower temperature for more accurate translations
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const translation = translationResponse.data.choices[0].message.content;
+    
+    // Return both the original transcription and the translation
+    res.status(200).json({
+      success: true,
+      originalTranscription: transcription,
+      translation: translation,
+      targetLanguage: finalTargetLanguage,
+      metadata: {
+        processed_at: new Date().toISOString(),
+        transcription_model: 'whisper-1',
+        translation_model: 'gpt-4'
+      }
+    });
+    
+  } catch (error) {
+    console.error('API Error:', error.response?.data || error.message);
     res.status(500).json({ 
       success: false,
-      error: 'Failed to retrieve available models',
-      details: error.message
+      error: error.message,
+      details: error.response?.data || "Unknown error"
     });
   }
 };

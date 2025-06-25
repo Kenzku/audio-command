@@ -15,6 +15,7 @@ export class CommandAnalyzer {
       loadingElement: null,
       commandTypes: {
         TRANSCRIBE: 'transcribe',
+        TRANSLATE: 'translate',
         LIST_MODELS: 'list_models',
         HELP: 'help',
         UNKNOWN: 'unknown'
@@ -52,6 +53,12 @@ export class CommandAnalyzer {
       }
       
       console.log('Transcription for command analysis:', transcription);
+      
+      // Always update result element with the transcription immediately
+      // This ensures the user sees the transcription text right away
+      if (this.options.resultElement) {
+        this.options.resultElement.textContent = transcription;
+      }
       
       // Send to LLM to identify commands and content sections
       const parsedCommand = await this.parseTranscriptionWithLLM(transcription);
@@ -129,17 +136,30 @@ export class CommandAnalyzer {
         Please analyze this transcription: "${transcription}"
         
         Identify if there's a command like:
-        - "transcribe this:" followed by content to transcribe
-        - "list models" or "show me available models"
-        - "help" or requests for assistance
+        - "transcribe this:" or similar phrases indicating transcription, followed by content to transcribe
+        - Any translation-related phrase like "translate", "translate for me", "translate this", "translate to [language]", "can you translate", etc.
+        - "list models" or "show me available models" or similar phrases asking to see available models
+        - "help" or any requests for assistance
         
         Return a JSON object with:
-        1. commandType: "transcribe", "list_models", "help", or "unknown"
-        2. content: The actual content to transcribe (if present)
+        1. commandType: "transcribe", "translate", "list_models", "help", or "unknown"
+        2. content: The actual content to transcribe or translate (if present)
         3. command: The specific command detected
+        4. targetLanguage: The target language for translation (if a translation command)
+           - If a specific language is mentioned (e.g., "translate to Spanish"), extract that language
+           - If no language is specified, default to "English"
+           - Be flexible in language detection, recognizing names like "Japanese", "German", "French", etc.
+           - If the user just says "translate" without specifying a language, assume English as the target
         
-        For example, if someone said "transcribe this: Hello world",
-        return { "commandType": "transcribe", "command": "transcribe this", "content": "Hello world" }
+        IMPORTANT: Be very flexible in command detection. Users might phrase things in many different ways.
+        
+        Examples:
+        - "transcribe this: Hello world" → { "commandType": "transcribe", "command": "transcribe this", "content": "Hello world" }
+        - "please transcribe the following" → { "commandType": "transcribe", "command": "please transcribe", "content": "the following" }
+        - "translate this to Spanish: Hello how are you?" → { "commandType": "translate", "command": "translate this to Spanish", "content": "Hello how are you?", "targetLanguage": "Spanish" }
+        - "can you translate the following to Japanese" → { "commandType": "translate", "command": "translate to Japanese", "content": "the following", "targetLanguage": "Japanese" }
+        - "translate for me" → { "commandType": "translate", "command": "translate", "content": "for me", "targetLanguage": "English" }
+        - "help me understand how this works" → { "commandType": "help", "command": "help", "content": "me understand how this works" }
       `;
       
       // Call LLM API to process the command
@@ -206,13 +226,17 @@ export class CommandAnalyzer {
    * @param {Blob} originalAudio - The original audio recording
    */
   async executeCommand(parsedCommand, originalAudio) {
-    const { commandType, content } = parsedCommand;
+    const { commandType, content, command } = parsedCommand;
     const { commandTypes } = this.options;
     
     try {
       switch (commandType) {
         case commandTypes.TRANSCRIBE:
           await this.executeTranscribeCommand(content);
+          break;
+          
+        case commandTypes.TRANSLATE:
+          await this.executeTranslateCommand(content, parsedCommand.targetLanguage);
           break;
           
         case commandTypes.LIST_MODELS:
@@ -225,16 +249,20 @@ export class CommandAnalyzer {
           
         case commandTypes.UNKNOWN:
         default:
-          // Just show the full transcription
-          if (this.options.resultElement && content) {
-            this.options.resultElement.textContent = content;
-          }
-          
+          // For unknown commands, the full transcription is already displayed
+          // Just update the status to indicate completion
           if (this.options.statusElement) {
             this.options.statusElement.textContent = 'Transcription complete';
           }
           break;
       }
+      
+      // Enable the transcribe button (if it exists) after command execution
+      const transcribeButton = document.getElementById('transcribeButton');
+      if (transcribeButton) {
+        transcribeButton.disabled = false;
+      }
+      
     } catch (error) {
       console.error('Error executing command:', error);
       if (this.options.statusElement) {
@@ -254,6 +282,97 @@ export class CommandAnalyzer {
     
     if (this.options.statusElement) {
       this.options.statusElement.textContent = 'Transcription complete';
+    }
+  }
+  
+  /**
+   * Execute translate command with the content and target language
+   * @param {string} content - The content to translate
+   * @param {string} targetLanguage - The target language to translate to (defaults to English)
+   */
+  async executeTranslateCommand(content, targetLanguage) {
+    if (!content) {
+      if (this.options.statusElement) {
+        this.options.statusElement.textContent = 'Error: No content provided for translation';
+      }
+      return;
+    }
+    
+    // Use English as default target language if none specified
+    const finalTargetLanguage = targetLanguage || 'English';
+    
+    if (this.options.statusElement) {
+      this.options.statusElement.textContent = `Translating to ${finalTargetLanguage}...`;
+    }
+    
+    try {
+      // For translation, we don't need to send the audio again
+      // We can just send the content and target language to the backend
+      const response = await fetch(`${this.options.apiUrl}/translate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          audioData: "", // Not used when we already have the content
+          content: content,
+          targetLanguage: finalTargetLanguage
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success || !data.translation) {
+        throw new Error('Translation failed or returned empty result');
+      }
+      
+      // Display both the original content and the translation
+      if (this.options.resultElement) {
+        this.options.resultElement.innerHTML = `
+          <div class="translation-result">
+            <div class="original">
+              <h4>Original (${data.originalLanguage || 'detected language'})</h4>
+              <p>${data.originalTranscription || content}</p>
+            </div>
+            <div class="translation">
+              <h4>Translation (${data.targetLanguage || finalTargetLanguage})</h4>
+              <p>${data.translation}</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (this.options.statusElement) {
+        this.options.statusElement.textContent = `Translation to ${data.targetLanguage || finalTargetLanguage} complete`;
+      }
+      
+    } catch (error) {
+      console.error('Translation error:', error);
+      
+      if (this.options.statusElement) {
+        this.options.statusElement.textContent = `Error: ${error.message}`;
+      }
+      
+      if (this.options.resultElement) {
+        // Keep showing the original content if translation fails
+        this.options.resultElement.innerHTML = `
+          <div class="translation-result">
+            <div class="original">
+              <h4>Original</h4>
+              <p>${content}</p>
+            </div>
+            <div class="translation error">
+              <h4>Translation Error</h4>
+              <p class="error-message">Failed to translate: ${error.message}</p>
+            </div>
+          </div>
+        `;
+      }
     }
   }
   
@@ -310,9 +429,12 @@ export class CommandAnalyzer {
           <p>You can use the following voice commands while recording:</p>
           <ul>
             <li><strong>Transcribe this: [your content]</strong> - Transcribe specific content</li>
+            <li><strong>Translate to [language]: [your content]</strong> - Translate to a specific language</li>
+            <li><strong>Translate this for me</strong> - Translate to English (default)</li>
             <li><strong>List models</strong> or <strong>Show available models</strong> - Lists transcription models</li>
             <li><strong>Help</strong> - Shows this help information</li>
           </ul>
+          <p>Translation is flexible - try phrases like "translate this to Japanese" or "can you translate the following to French".</p>
           <p>Or just speak naturally and the AI will transcribe your entire recording.</p>
         </div>
       `;
