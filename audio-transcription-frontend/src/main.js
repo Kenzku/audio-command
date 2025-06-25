@@ -2,6 +2,7 @@ import { setupRecorder } from './components/audioRecorder.js';
 import { setupTranscriptionUI } from './components/transcriptionUI.js';
 import { setupVisualizer } from './components/visualizer.js';
 import { setupLLMAssistant } from './components/llmAssistant.js';
+import { setupVoiceCommands } from './components/voiceCommands.js';
 import { APIDiscoveryService } from './services/apiDiscovery.js';
 import { API_URL, LLM_API_URL, API_SPEC_URL } from './config.js';
 
@@ -62,8 +63,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.apiDiscovery = apiDiscoveryService;
     
     // Initialize LLM Assistant if the container exists
+    let llmAssistant;
     if (document.getElementById('llm-assistant')) {
-      const llmAssistant = setupLLMAssistant({
+      llmAssistant = setupLLMAssistant({
         apiUrl: LLM_API_URL,
         assistantContainer: document.getElementById('llm-assistant'),
         queryInput: document.getElementById('llm-query'),
@@ -75,7 +77,56 @@ document.addEventListener('DOMContentLoaded', async () => {
       const endpoints = apiDiscoveryService.getAvailableEndpoints();
       console.log(`Discovered ${endpoints.length} API endpoints`);
     }
+    
+    // Initialize Voice Commands
+    const voiceCommands = setupVoiceCommands({
+      statusElement: document.getElementById('status'),
+      recorder: recorder,
+      apiDiscoveryService: apiDiscoveryService,
+      resultTextElement: document.getElementById('resultText'),
+      onTranscriptionComplete: (text) => {
+        console.log('Transcription from voice command:', text);
+      },
+      onCommandDetected: (commandInfo) => {
+        console.log('Voice command detected:', commandInfo);
+      }
+    });
+    
+    // Make voice commands available globally and to recorder component
+    if (voiceCommands) {
+      window.voiceCommands = voiceCommands;
+      if (recorder) {
+        recorder.voiceCommands = voiceCommands;
+      }
+    }
+    
+    // Add voice command toggle button to UI
+    const voiceCommandButton = document.getElementById('voiceCommandButton');
+    if (voiceCommandButton && voiceCommands) {
+      let commandModeActive = false;
+      
+      voiceCommandButton.addEventListener('click', () => {
+        if (commandModeActive) {
+          voiceCommands.stopCommandMode();
+          voiceCommandButton.classList.remove('active');
+          voiceCommandButton.innerHTML = '<i class="mic-icon"></i> Enable Voice Commands';
+          commandModeActive = false;
+        } else {
+          voiceCommands.startCommandMode();
+          voiceCommandButton.classList.add('active');
+          voiceCommandButton.innerHTML = '<i class="mic-icon active"></i> Listening...';
+          commandModeActive = true;
+        }
+      });
+    }
   } catch (error) {
     console.error('Failed to initialize API discovery:', error);
+  }
+  
+  // Load test scripts in development mode
+  if (import.meta.env.DEV) {
+    import('./tests/voiceCommandTests.js')
+      .then(() => console.log('Voice command tests loaded'))
+      .catch(err => console.error('Failed to load voice command tests:', err));
   }
 });

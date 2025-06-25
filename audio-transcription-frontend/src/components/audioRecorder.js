@@ -121,6 +121,15 @@ export function setupRecorder({
     statusElement.textContent = 'Ready to record';
   }
   
+  // Enable automatic voice command detection after recording
+  function enableVoiceCommandAfterRecording() {
+    if (window.voiceCommands) {
+      setTimeout(() => {
+        window.voiceCommands.startCommandMode();
+      }, 500); // Short delay after recording stops
+    }
+  }
+  
   // Return public API
   return {
     startRecording,
@@ -128,5 +137,13 @@ export function setupRecorder({
     reset,
     isRecording: () => isRecording,
     getAudioBlob: () => audioBlob,
+    // Property to be set by main.js
+    voiceCommands: null,
+    // Method to activate voice commands mode
+    activateVoiceCommands: () => {
+      if (window.voiceCommands) {
+        window.voiceCommands.startCommandMode();
+      }
+    }
   };
 }

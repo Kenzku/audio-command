@@ -6,6 +6,7 @@
     <title>Audio Transcription App</title>
     <link rel="stylesheet" href="./src/styles/main.css">
     <link rel="stylesheet" href="./src/styles/llmAssistant.css">
+    <link rel="stylesheet" href="./src/styles/voiceCommands.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-dark.min.css">
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
   </head>
@@ -38,11 +39,17 @@
               <div class="visualization-container">
                 <div id="waveform"></div>
               </div>
-              
-              <div class="controls">
-                <button id="stopButton" class="btn stop-btn" disabled>Stop</button>
-                <button id="transcribeButton" class="btn transcribe-btn" disabled>Transcribe</button>
-              </div>
+                 <div class="controls">
+              <button id="stopButton" class="btn stop-btn" disabled>Stop</button>
+              <button id="transcribeButton" class="btn transcribe-btn" disabled>Transcribe</button>
+            </div>
+            
+            <div class="voice-command-controls">
+              <button id="voiceCommandButton" class="btn voice-command-btn">
+                <i class="mic-icon"></i> Enable Voice Commands
+              </button>
+              <p class="voice-command-hint">Say "transcribe", "list models", or "help"</p>
+            </div>
             </div>
           </div>
           
