@@ -1,6 +1,6 @@
-# Contributing to the Audio Transcription & Translation Platform
+# Contributing to the Voice Command Platform
 
-Thank you for your interest in contributing to our project! This document provides guidelines and instructions for contributing to both the backend API and frontend application.
+Thank you for your interest in contributing to our project! This document provides guidelines and instructions for contributing to both the voice command API and UI application.
 
 ## Code of Conduct
 

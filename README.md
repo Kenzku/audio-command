@@ -1,21 +1,21 @@
-# Audio Transcription & Translation Platform
+# Voice Command Platform
 
-A full-stack application for audio processing with AI-driven transcription, translation, and voice command capabilities. This project demonstrates how to build production-grade AI integrations using modern web technologies.
+A full-stack application that detects and executes voice commands with AI-driven transcription, translation, and natural language processing. This project demonstrates how to build production-grade AI integrations using modern web technologies.
 
 ## Project Overview
 
 This platform consists of two main components:
 
-1. **Backend API (`audio-api-backend`)**: Express.js server that integrates with OpenAI's APIs for audio transcription and translation.
-2. **Frontend Application (`audio-transcription-frontend`)**: Modern Vite.js app with audio recording, visualization, and LLM-powered command detection.
+1. **Backend API (`voice-command-api`)**: Express.js server that integrates with OpenAI's APIs for voice command detection, transcription, and translation.
+2. **Frontend Application (`voice-command-ui`)**: Modern Vite.js app with audio recording, visualization, and LLM-powered command detection and execution.
 
 ## Key Features
 
 - 🎤 Real-time audio recording with waveform visualization
 - 🔤 High-quality transcription using OpenAI's Whisper models
+- 🗣️ Natural voice command detection and execution using LLM analysis
 - 🌍 Translation to any language with LLM-powered capabilities
 - 🤖 AI assistant for API discovery and assistance
-- 🗣️ Natural voice command detection using LLM analysis
 - 📊 OpenAPI documentation and Swagger UI
 
 ## Getting Started
@@ -29,11 +29,11 @@ This platform consists of two main components:
 ### Backend Setup
 
 ```bash
-cd audio-api-backend
+cd voice-command-api
 npm install
 ```
 
-Create a `.env` file in the `audio-api-backend` directory with:
+Create a `.env` file in the `voice-command-api` directory with:
 ```
 OPENAI_API_KEY=your_openai_api_key_here
 PORT=3000
@@ -42,7 +42,7 @@ PORT=3000
 ### Frontend Setup
 
 ```bash
-cd audio-transcription-frontend
+cd voice-command-ui
 npm install
 ```
 

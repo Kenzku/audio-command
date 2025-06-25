@@ -1,6 +1,6 @@
-# Developer Playbook: Building AI-Enabled Audio Applications
+# Developer Playbook: Building AI-Enabled Voice Command Applications
 
-This playbook provides a comprehensive guide for developers who want to build AI-enabled audio applications similar to our Audio Transcription & Translation Platform. Follow these steps and best practices to implement audio recording, transcription, translation, and voice command features in your own applications.
+This playbook provides a comprehensive guide for developers who want to build AI-enabled voice command applications similar to our Voice Command Platform. Follow these steps and best practices to implement voice command detection, execution, audio recording, transcription, and translation features in your own applications.
 
 ## Table of Contents
 

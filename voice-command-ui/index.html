@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice Command Platform</title>
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <link rel="stylesheet" href="./src/styles/llmAssistant.css">
+    <link rel="stylesheet" href="./src/styles/voiceCommands.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <h1>Voice Command Platform</h1>
+        <p class="subtitle">Record your voice commands and get instant execution with AI</p>
+      </header>
+
+      <div class="app-tabs">
+        <button id="tab-transcription" class="tab active" data-target="transcription-section">Transcription</button>
+        <button id="tab-ai-assistant" class="tab" data-target="ai-assistant-section">AI Assistant</button>
+      </div>
+
+      <main>
+        <section id="transcription-section" class="tab-content active">
+          <div class="recorder-card">
+            <div id="recorder" class="recorder-container">
+              <button id="recordButton" class="btn record-btn">
+                <div class="record-icon"></div>
+                <span>Start Recording</span>
+                <small class="command-hint">Commands are automatically detected</small>
+              </button>
+              
+              <div class="recording-info">
+                <div id="timer" class="timer">00:00</div>
+                <div id="status" class="status">Ready to record</div>
+              </div>
+              
+              <div class="visualization-container">
+                <div id="waveform"></div>
+              </div>
+                 <div class="controls">
+              <button id="stopButton" class="btn stop-btn" disabled>Stop</button>
+              <button id="transcribeButton" class="btn transcribe-btn" disabled>Transcribe</button>
+            </div>
+            
+            <div class="voice-command-controls">
+              <p class="voice-command-hint">Try saying: "transcribe this: hello world" or "translate to Japanese: hello world"</p>
+            </div>
+            </div>
+          </div>
+          
+          <div class="result-card">
+            <h2>Transcription Result</h2>
+            <div id="loading" class="loading hidden">
+              <div class="spinner"></div>
+              <p>Processing your audio...</p>
+            </div>
+            <div id="result" class="result-container">
+              <div id="resultText" class="result-text">Your transcription will appear here...</div>
+              <div class="result-actions">
+                <button id="copyButton" class="btn secondary-btn">Copy to Clipboard</button>
+                <button id="newRecordingButton" class="btn primary-btn">New Recording</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <section id="ai-assistant-section" class="tab-content">
+          <div class="assistant-card">
+            <h2>AI Assistant</h2>
+            <p class="assistant-intro">Ask me how to use the Audio API. I understand the API's capabilities and can recommend the right endpoints for your needs.</p>
+            
+            <div id="llm-assistant" class="llm-assistant">
+              <div class="query-input">
+                <input type="text" id="llm-query" placeholder="e.g., How do I transcribe an audio file?" />
+                <button id="llm-submit" class="btn primary-btn">Ask</button>
+              </div>
+              
+              <div id="llm-response" class="assistant-response">
+                <div class="initial-message">
+                  <p>I can help you understand how to use the Audio API. Here are some things you can ask me:</p>
+                  <ul>
+                    <li>What APIs are available for audio transcription?</li>
+                    <li>How do I send audio data for transcription?</li>
+                    <li>What languages are supported?</li>
+                    <li>How can I get the list of available models?</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      
+      <footer>
+        <p>Made with ❤️ | Powered by OpenAI Whisper | <a href="/api-docs" target="_blank">API Documentation</a></p>
+      </footer>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
