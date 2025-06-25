@@ -11,7 +11,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(express.json());
 
 // Example endpoint to send audio data to AssemblyAI for speech-to-text
-app.post('/analyze-audio', async (req, res) => {
+app.post('/analyze-command', async (req, res) => {
   try {
     // In a real scenario, you would get audio data from req.body or a file upload
     const audioData = req.body.audioData; // Placeholder: base64 or URL to audio file
@@ -37,7 +37,7 @@ app.post('/analyze-audio', async (req, res) => {
 });
 
 // Upload audio file endpoint
-app.post('/upload-audio', upload.single('audio'), async (req, res) => {
+app.post('/upload-voice-command', upload.single('audio'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No audio file uploaded' });
@@ -59,7 +59,7 @@ app.post('/upload-audio', upload.single('audio'), async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Node.js Audio AI Backend Connector is running.');
+  res.send('Voice Command Platform API is running.');
 });
 
 app.listen(PORT, () => {

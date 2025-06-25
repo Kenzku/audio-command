@@ -1,4 +1,4 @@
-// Sample audio download helper
+// Sample voice command audio download helper
 const fs = require('fs');
 const https = require('https');
 
@@ -19,7 +19,7 @@ https.get(sampleAudioUrl, function(response) {
   file.on('finish', () => {
     file.close();
     console.log(`Sample audio downloaded to ${outputPath}`);
-    console.log('You can now run test-audio-api.js to test the API');
+    console.log('You can now run test-voice-command-api.js to test the API');
   });
 }).on('error', function(err) {
   // Handle errors

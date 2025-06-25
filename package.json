@@ -1,5 +1,5 @@
 {
-  "name": "vscode-test-2025-06",
+  "name": "voice-command-platform",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,10 +7,10 @@
     "start": "node index.js",
     "dev": "nodemon index.js --ext js,html,css"
   },
-  "keywords": [],
+  "keywords": ["voice", "command", "platform", "speech", "recognition", "nlp"],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A full-stack application that detects and executes voice commands with AI-driven transcription and natural language processing",
   "dependencies": {
     "axios": "^1.10.0",
     "dotenv": "^16.5.0",

@@ -24,7 +24,7 @@ app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Example endpoint to send audio data to an audio AI backend
-app.post('/analyze-audio', async (req, res) => {
+app.post('/analyze-command', async (req, res) => {
   try {
     // Get audio data from the request body
     const audioData = req.body.audioData;
@@ -38,7 +38,7 @@ app.post('/analyze-audio', async (req, res) => {
     const path = require('path');
     
     // Create a temporary file path - use .wav extension for compatibility
-    const tempFilePath = path.join(os.tmpdir(), `audio-${Date.now()}.wav`);
+    const tempFilePath = path.join(os.tmpdir(), `voice-command-${Date.now()}.wav`);
     
     // Write the base64-decoded audio data to the temp file
     fs.writeFileSync(tempFilePath, Buffer.from(audioData, 'base64'));
@@ -84,5 +84,5 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
-  console.log(`Open your browser to http://localhost:${PORT} to use the speech recognition UI`);
+  console.log(`Open your browser to http://localhost:${PORT} to use the Voice Command Platform UI`);
 });
