@@ -1,16 +1,26 @@
-# Audio API Backend
-/audio-api-backend/node_modules/
-/audio-api-backend/.env
-/audio-api-backend/.DS_Store
+# Environment files containing credentials (anywhere in the project)
+**/.env
+**/.env.*
+!**/.env.example
 
-# Audio Transcription Frontend
-/audio-transcription-frontend/node_modules/
-/audio-transcription-frontend/dist/
-/audio-transcription-frontend/.DS_Store
+# Node modules and dependencies
+**/node_modules/
 
-# Old files
+# Voice Command API
+/voice-command-api/logs/
+/voice-command-api/.DS_Store
+/voice-command-api/coverage/
+
+# Voice Command UI
+/voice-command-ui/dist/
+/voice-command-ui/.DS_Store
+/voice-command-ui/build/
+/voice-command-ui/coverage/
+
+# General files
 /node_modules/
 /public/
 /.vscode/
-/.env
 /sample.mp3
+**/.DS_Store
+**/*.log
