@@ -1,0 +1,16 @@
+# Audio API Backend
+/audio-api-backend/node_modules/
+/audio-api-backend/.env
+/audio-api-backend/.DS_Store
+
+# Audio Transcription Frontend
+/audio-transcription-frontend/node_modules/
+/audio-transcription-frontend/dist/
+/audio-transcription-frontend/.DS_Store
+
+# Old files
+/node_modules/
+/public/
+/.vscode/
+/.env
+/sample.mp3

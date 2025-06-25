@@ -1,0 +1,156 @@
+/* 
+ * LLM Assistant Component Styles
+ */
+
+.app-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-md);
+  background-color: var(--card-bg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: 500;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: var(--primary);
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom: 3px solid var(--primary);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.assistant-card {
+  background-color: var(--card-bg);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.assistant-intro {
+  color: var(--text-light);
+  margin-bottom: var(--spacing-md);
+}
+
+.llm-assistant {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.query-input {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.query-input input {
+  flex: 1;
+  padding: var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+}
+
+.query-input input:focus {
+  outline: 2px solid var(--primary-light);
+  border-color: transparent;
+}
+
+.assistant-response {
+  background-color: var(--background);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.initial-message {
+  color: var(--text-light);
+}
+
+.initial-message ul {
+  margin-top: var(--spacing-sm);
+  padding-left: var(--spacing-lg);
+}
+
+.initial-message li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.api-action-btn {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: 2px 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-left: var(--spacing-xs);
+  transition: background-color 0.2s ease;
+}
+
+.api-action-btn:hover {
+  background-color: var(--secondary-hover);
+}
+
+.assistant-response pre {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  overflow-x: auto;
+  font-size: 0.9rem;
+  margin: var(--spacing-md) 0;
+}
+
+.assistant-response code {
+  font-family: monospace;
+  background-color: #e2e8f020;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.assistant-response pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.error {
+  color: var(--danger);
+  padding: var(--spacing-sm);
+  background-color: #fee2e2;
+  border-radius: var(--border-radius);
+}
+
+@media (max-width: 768px) {
+  .query-input {
+    flex-direction: column;
+  }
+  
+  .assistant-response {
+    max-height: 300px;
+  }
+}

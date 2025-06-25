@@ -1,0 +1,136 @@
+const swaggerJsDoc = require('swagger-jsdoc');
+
+// OpenAPI definition
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Audio Transcription API',
+      version: '1.0.0',
+      description: 'API for transcribing audio using OpenAI Whisper',
+      contact: {
+        name: 'API Support',
+        url: 'https://example.com/support',
+        email: 'support@example.com',
+      },
+      license: {
+        name: 'MIT',
+        url: 'https://opensource.org/licenses/MIT',
+      },
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+      {
+        url: 'https://api.example.com',
+        description: 'Production server',
+      },
+    ],
+    tags: [
+      {
+        name: 'Audio',
+        description: 'Audio transcription endpoints',
+      },
+      {
+        name: 'Health',
+        description: 'API health check',
+      },
+      {
+        name: 'LLM',
+        description: 'Language Model integration for API discovery and usage',
+      },
+    ],
+    components: {
+      schemas: {
+        TranscriptionRequest: {
+          type: 'object',
+          required: ['audioData'],
+          properties: {
+            audioData: {
+              type: 'string',
+              description: 'Base64 encoded audio data',
+              example: 'data:audio/wav;base64,UklGRiQAAABXQVZ...',
+            },
+            language: {
+              type: 'string',
+              description: 'Language code (ISO 639-1) for transcription',
+              example: 'en',
+            },
+            prompt: {
+              type: 'string',
+              description: 'Optional prompt to guide the transcription',
+              example: 'This is a meeting about project status.',
+            },
+          },
+        },
+        TranscriptionResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              description: 'Whether the transcription was successful',
+              example: true,
+            },
+            transcription: {
+              type: 'string',
+              description: 'The transcribed text',
+              example: 'Hello world, this is a test transcription.',
+            },
+            metadata: {
+              type: 'object',
+              properties: {
+                processed_at: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'When the audio was processed',
+                  example: '2025-06-25T12:34:56Z',
+                },
+              },
+            },
+          },
+        },
+        ErrorResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              description: 'Always false for error responses',
+              example: false,
+            },
+            error: {
+              type: 'string',
+              description: 'Error message',
+              example: 'Failed to process audio data',
+            },
+            details: {
+              type: 'object',
+              description: 'Additional error details if available',
+            },
+          },
+        },
+        HealthResponse: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              description: 'API status',
+              example: 'ok',
+            },
+            message: {
+              type: 'string',
+              description: 'Status message',
+              example: 'Audio API is running',
+            },
+          },
+        },
+      },
+    },
+  },
+  apis: ['./src/routes/*.js', './src/controllers/*.js', './src/index.js'], // paths to files with annotations
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+module.exports = swaggerDocs;
