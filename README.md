@@ -48,20 +48,32 @@ npm install
 
 ## Running the Projects
 
-### Run Backend
+### Option 1: Run Both Services with a Single Script
+
+The easiest way to start both the backend and frontend simultaneously:
 
 ```bash
-cd audio-api-backend
+./start-dev.sh
+```
+
+This script starts both servers in development mode. The backend will be available at `http://localhost:3000` and the frontend at `http://localhost:5173` (or another port if 5173 is in use).
+
+### Option 2: Run Services Individually
+
+#### Run Backend
+
+```bash
+cd voice-command-api
 npm run dev  # or npm start for production
 ```
 
 The backend will be available at `http://localhost:3000`.
 API docs will be available at `http://localhost:3000/api-docs`.
 
-### Run Frontend
+#### Run Frontend
 
 ```bash
-cd audio-transcription-frontend
+cd voice-command-ui
 npm run dev  # or npm run build && npm run preview for production
 ```
 
@@ -69,7 +81,7 @@ The frontend will be available at the URL shown in your terminal (typically `htt
    - Click stop when finished, then click "Transcribe"
 
 ## API Usage
-You can also use the API directly by sending a POST request to `/analyze-audio` with base64-encoded audio data:
+You can also use the API directly by sending a POST request to `/analyze-command` with base64-encoded audio data:
 ```json
 {
   "audioData": "<base64-encoded-audio-data>"
@@ -77,14 +89,29 @@ You can also use the API directly by sending a POST request to `/analyze-audio` 
 ```
 
 ## Project Structure
-- `index.js` - Main server file with Express configuration and API endpoints
-- `public/` - Web interface files
-  - `index.html` - Main HTML page
-  - `styles.css` - CSS styling
-  - `app.js` - Frontend JavaScript for recording and UI interaction
+
+### Main Project
 - `.env` - Environment variables (OpenAI API key)
-- `test-audio-api.js` - Test script for API functionality
+- `index.js` - Main server file with Express configuration and API endpoints
+- `start-dev.sh` - Script to start both backend and frontend servers
+- `test-voice-command-api.js` - Test script for API functionality
 - `download-sample-audio.js` - Helper script to download a sample audio file
+
+### Backend (`voice-command-api/`)
+- `src/` - Backend source code
+  - `index.js` - Express application entry point
+  - `controllers/` - API endpoint controllers
+  - `routes/` - API route definitions
+  - `config/` - Configuration files including Swagger setup
+  - `services/` - Business logic and external API integration
+
+### Frontend (`voice-command-ui/`)
+- `index.html` - Main HTML entry point
+- `src/` - Frontend source code
+  - `main.js` - Application entry point
+  - `components/` - UI components and functionality
+  - `styles/` - CSS styling
+  - `config.js` - Frontend configuration
 
 ## Browser Compatibility
 The recording feature works in modern browsers (Chrome, Firefox, Edge, Safari) that support the MediaRecorder API.
